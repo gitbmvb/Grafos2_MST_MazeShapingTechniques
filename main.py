@@ -5,7 +5,9 @@ from time import sleep
 
 pygame.font.init()
 pygame.display.init()
+pygame.mixer.init()
 
+## GRID
 WIDTH, HEIGHT = 1280, 720
 TILE = 40
 colunas, linhas = WIDTH // TILE, HEIGHT // TILE
@@ -13,10 +15,18 @@ matriz_celulas = [Celula(coluna, linha) for linha in range(linhas) for coluna in
 
 tela = pygame.display.set_mode((WIDTH + 300, HEIGHT))
 pygame.display.set_caption("MazeShapingTechniques - Menu Principal")
+
+## TAXA DE ATUALIZAÇÃO
 FPS = 100
 clock = pygame.time.Clock()
 
+
 fundo_menu = pygame.image.load("assets/fundo_menu.png")
+
+## FUNDO MUSICAL
+music_files = ["assets/soundtrack.mp3"]
+pygame.mixer.music.load(music_files[0])
+pygame.mixer.music.play()
 
 
 def get_fonte(tamanho):
