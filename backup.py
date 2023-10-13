@@ -7,9 +7,6 @@ pygame.font.init()
 pygame.display.init()
 
 WIDTH, HEIGHT = 1280, 720
-TILE = 40
-colunas, linhas = WIDTH // TILE, HEIGHT // TILE
-matriz_celulas = [Celula(coluna, linha) for linha in range(linhas) for coluna in range(colunas)]
 
 tela = pygame.display.set_mode((WIDTH + 300, HEIGHT))
 pygame.display.set_caption("MazeShapingTechniques - Menu Principal")
@@ -101,43 +98,18 @@ def menu_algoritmo():
                 
         pygame.display.update()
 
-def gerar_labirinto(algoritmo):
-    counter = 0
+
+def jogar(algoritmo: int):
+    tela = pygame.display.set_mode((WIDTH, HEIGHT))
+    pygame.display.set_caption("MazeShapingTechniques - Jogo")
+    TILE = 40
+    colunas, linhas = WIDTH // TILE, HEIGHT // TILE
+
+    matriz_celulas = [Celula(coluna, linha) for linha in range(linhas) for coluna in range(colunas)]
+
     celula_atual = matriz_celulas[0]
     objetivo = matriz_celulas[-1]
     pilha = []
-     
-    while counter < colunas * linhas - 1:
-        tela.blit(fundo_menu, (0, 0))
-        texto_menu = get_fonte(40).render("Gerando labirinto...({:-.2f}%)".format((counter * 100)/(colunas*linhas)), True, "#ffffff")
-        rect_menu = texto_menu.get_rect(center=(790, 360))
-        tela.blit(texto_menu, rect_menu)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-        pygame.display.update()
-            
-        celula_atual.visitada = True
-        proxima_celula = celula_atual.checar_vizinhos(matriz_celulas, linhas, colunas)
-        if proxima_celula:
-            proxima_celula.visitada = True
-            pilha.append(celula_atual)
-            remove_paredes(celula_atual, proxima_celula)
-            celula_atual = proxima_celula
-            counter += 1
-        elif pilha:
-            celula_atual = pilha.pop()
-        print(counter)
-
-        pygame.display.update()
-        clock.tick(FPS)
-
-
-def jogar():
-    tela = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("MazeShapingTechniques - Jogo")
 
     while True:
         tela.fill(pygame.Color('black'))
@@ -146,8 +118,28 @@ def jogar():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
+
+        """
+        kruskal = 0
+        prim = 1
+        dfs = 2
+        """
         
         [celula.desenhar(tela, cor="white", TILE=TILE) for celula in matriz_celulas]
+
+        celula_atual.visitada = True
+        celula_atual.preencher_celula(tela=tela, cor='red', TILE=TILE)
+        objetivo.preencher_celula(tela=tela, cor='green', TILE=TILE)
+
+        proxima_celula = celula_atual.checar_vizinhos(matriz_celulas, linhas, colunas)
+        if proxima_celula:
+            proxima_celula.visitada = True
+            pilha.append(celula_atual)
+            remove_paredes(celula_atual, proxima_celula)
+            celula_atual = proxima_celula
+        elif pilha:
+            celula_atual = pilha.pop()
+        sleep(0.25)
         pygame.display.update()
         clock.tick(FPS)
         
@@ -157,8 +149,7 @@ if __name__ == "__main__":
     opcao_escolhida = menu_principal()
     if opcao_escolhida == 0:
         algoritmo = menu_algoritmo()
-        gerar_labirinto(algoritmo)
-        jogar()
+        jogar(algoritmo)
     elif opcao_escolhida == 1:
         pygame.quit()
         sys.exit()
