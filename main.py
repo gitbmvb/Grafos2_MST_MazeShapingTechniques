@@ -1,6 +1,7 @@
 import pygame, sys
 from celula import *
 from botao import Botao
+from time import sleep
 
 pygame.font.init()
 pygame.display.init()
@@ -98,7 +99,7 @@ def menu_algoritmo():
         pygame.display.update()
 
 
-def jogar():
+def jogar(algoritmo: int):
     tela = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("MazeShapingTechniques - Jogo")
     TILE = 40
@@ -118,6 +119,12 @@ def jogar():
                 pygame.quit()
                 exit()
 
+        """
+        kruskal = 0
+        prim = 1
+        dfs = 2
+        """
+        
         [celula.desenhar(tela, cor="white", TILE=TILE) for celula in matriz_celulas]
 
         celula_atual.visitada = True
@@ -132,16 +139,17 @@ def jogar():
             celula_atual = proxima_celula
         elif pilha:
             celula_atual = pilha.pop()
-
+        sleep(0.25)
         pygame.display.update()
         clock.tick(FPS)
+        
 
 
 if __name__ == "__main__":
     opcao_escolhida = menu_principal()
     if opcao_escolhida == 0:
         algoritmo = menu_algoritmo()
-        # jogar(algoritmo)
+        jogar(algoritmo)
     elif opcao_escolhida == 1:
         pygame.quit()
         sys.exit()
