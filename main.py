@@ -131,22 +131,15 @@ def gerar_labirinto(algoritmo):
     
         [celula.desenhar(tela, cor="white", TILE=TILE) for celula in matriz_celulas]
         if algoritmo == 0:
-            if len(union) <= 1: ready = True
+            if contador >= linhas * colunas - 1: ready = True
             celula_atual = choice(matriz_celulas)
             celula_atual.visitada = True
-            proxima_celula = celula_atual.checar_vizinhos(matriz_celulas, linhas, colunas)
+            proxima_celula = celula_atual.checar_vizinhos(matriz_celulas, linhas, colunas, estrito=False)
             if proxima_celula:
                 proxima_celula.visitada = True
                 remove_paredes(celula_atual, proxima_celula)
-                print(union[celula_atual], union[proxima_celula])
-                if len(union[celula_atual]) > len(union[proxima_celula]):
-                    union[celula_atual].extend(union[proxima_celula])
-                    union[proxima_celula].clear()
-                    # del union[proxima_celula]
-                else:
-                    union[proxima_celula].extend(union[celula_atual])
-                    union[celula_atual].clear()
-                    # del union[celula_atual]
+    
+                contador += 1
 
         elif algoritmo == 1:
             if contador >= linhas * colunas - 1: ready = True

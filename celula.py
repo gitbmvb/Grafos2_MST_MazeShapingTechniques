@@ -30,18 +30,20 @@ class Celula:
         if self.paredes["esquerda"]:
             pygame.draw.line(tela, pygame.Color("black"), (x, y + TILE), (x, y), self.espessura)
 
-    def checar_celula(self, x, y, matriz_celulas, linhas, colunas):
+    def checar_celula(self, x, y, matriz_celulas, linhas, colunas, estrito=True):
         procura_indice = lambda x, y: x + y * colunas
-        if x < 0 or x > colunas - 1 or y < 0 or y > linhas - 1 or matriz_celulas[procura_indice(x, y)].visitada is True:
+        if estrito and (x < 0 or x > colunas - 1 or y < 0 or y > linhas - 1 or matriz_celulas[procura_indice(x, y)].visitada is True):
+            return False
+        elif not estrito and (x < 0 or x > colunas - 1 or y < 0 or y > linhas - 1):
             return False
         return matriz_celulas[procura_indice(x, y)]
 
-    def checar_vizinhos(self, matriz_celulas, linhas, colunas):
+    def checar_vizinhos(self, matriz_celulas, linhas, colunas, estrito=True):
         vizinhos = []
-        cima = self.checar_celula(self.x, self.y - 1, matriz_celulas, linhas, colunas)
-        direita = self.checar_celula(self.x + 1, self.y, matriz_celulas, linhas, colunas)
-        baixo = self.checar_celula(self.x, self.y + 1, matriz_celulas, linhas, colunas)
-        esquerda = self.checar_celula(self.x - 1, self.y, matriz_celulas, linhas, colunas)
+        cima = self.checar_celula(self.x, self.y - 1, matriz_celulas, linhas, colunas, estrito)
+        direita = self.checar_celula(self.x + 1, self.y, matriz_celulas, linhas, colunas, estrito)
+        baixo = self.checar_celula(self.x, self.y + 1, matriz_celulas, linhas, colunas, estrito)
+        esquerda = self.checar_celula(self.x - 1, self.y, matriz_celulas, linhas, colunas, estrito)
         if cima:
             vizinhos.append(cima)
         if direita:
