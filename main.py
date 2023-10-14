@@ -2,6 +2,7 @@ import pygame, sys
 from celula import *
 from botao import Botao
 from time import sleep
+from queue import Queue
 
 pygame.font.init()
 pygame.display.init()
@@ -26,7 +27,7 @@ fundo_menu = pygame.image.load("assets/fundo_menu.png")
 ## FUNDO MUSICAL
 music_files = ["assets/soundtrack.mp3"]
 pygame.mixer.music.load(music_files[0])
-pygame.mixer.music.play()
+# pygame.mixer.music.play()
 
 
 def get_fonte(tamanho):
@@ -112,38 +113,58 @@ def menu_algoritmo():
         pygame.display.update()
 
 def gerar_labirinto(algoritmo):
-    counter = 0
+    ready = False
+    contador = 0
     celula_atual = matriz_celulas[0]
-    objetivo = matriz_celulas[-1]
     pilha = []
-     
-    while counter < colunas * linhas - 1:
-        tela.blit(fundo_menu, (0, 0))
-        texto_menu = get_fonte(40).render("Gerando labirinto...({:-.2f}%)".format((counter * 100)/(colunas*linhas)), True, "#ffffff")
-        rect_menu = texto_menu.get_rect(center=(790, 360))
-        tela.blit(texto_menu, rect_menu)
 
+    union = {celula: [celula] for celula in matriz_celulas}
+    while not ready:
+        # tela.blit(fundo_menu, (0, 0))
+        # texto_menu = get_fonte(40).render("Gerando labirinto...({:-.2f}%)".format((contador * 100)/(colunas*linhas)), True, "#ffffff")
+        # rect_menu = texto_menu.get_rect(center=(790, 360))
+        # tela.blit(texto_menu, rect_menu)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-        pygame.display.update()
-            
-        celula_atual.visitada = True
-        proxima_celula = celula_atual.checar_vizinhos(matriz_celulas, linhas, colunas)
-        if proxima_celula:
-            proxima_celula.visitada = True
-            pilha.append(celula_atual)
-            remove_paredes(celula_atual, proxima_celula)
-            celula_atual = proxima_celula
-            counter += 1
-        elif pilha:
-            celula_atual = pilha.pop()
-        print(counter)
+    
+        [celula.desenhar(tela, cor="white", TILE=TILE) for celula in matriz_celulas]
+        if algoritmo == 0:
+            if len(union) <= 1: ready = True
+            celula_atual = choice(matriz_celulas)
+            celula_atual.visitada = True
+            proxima_celula = celula_atual.checar_vizinhos(matriz_celulas, linhas, colunas)
+            if proxima_celula:
+                proxima_celula.visitada = True
+                remove_paredes(celula_atual, proxima_celula)
+                print(union[celula_atual], union[proxima_celula])
+                if len(union[celula_atual]) > len(union[proxima_celula]):
+                    union[celula_atual].extend(union[proxima_celula])
+                    union[proxima_celula].clear()
+                    # del union[proxima_celula]
+                else:
+                    union[proxima_celula].extend(union[celula_atual])
+                    union[celula_atual].clear()
+                    # del union[celula_atual]
 
+        elif algoritmo == 1:
+            if contador >= linhas * colunas - 1: ready = True
+            celula_atual.visitada = True
+            proxima_celula = celula_atual.checar_vizinhos(matriz_celulas, linhas, colunas)
+            if proxima_celula:
+                proxima_celula.visitada = True
+                remove_paredes(celula_atual, proxima_celula)
+                pilha.append(celula_atual)
+                celula_atual = proxima_celula
+                contador += 1
+            elif pilha: celula_atual = pilha.pop()
+
+        elif algoritmo == 2:
+            pass
+        
         pygame.display.update()
         clock.tick(FPS)
-
 
 def jogar():
     tela = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -161,7 +182,6 @@ def jogar():
         pygame.display.update()
         clock.tick(FPS)
         
-
 
 if __name__ == "__main__":
     opcao_escolhida = menu_principal()
